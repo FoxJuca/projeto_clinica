@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projeção de Cenários — Clínica Boutique</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F4EF;
+    --ink: #1A1714;
+    --muted: #6B6560;
+    --accent: #2D5A4E;
+    --accent-light: #E8F0EE;
+    --warn: #C4501A;
+    --warn-light: #FAF0EB;
+    --gold: #A8824A;
+    --gold-light: #F7F1E8;
+    --border: #DDD8D0;
+    --white: #FFFFFF;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 32px;
+  }
+
+  header {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 24px;
+    margin-bottom: 40px;
+  }
+
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+  }
+
+  header h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  header p {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 300;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+    margin-bottom: 12px;
+  }
+
+  .tag-green { background: var(--accent-light); color: var(--accent); }
+  .tag-red { background: var(--warn-light); color: var(--warn); }
+  .tag-gold { background: var(--gold-light); color: var(--gold); }
+
+  /* PREMISSAS */
+  .premissas {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 40px;
+  }
+
+  .premissas h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .premissas-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+
+  .premissa-item {
+    background: var(--bg);
+    border-radius: 6px;
+    padding: 12px 14px;
+  }
+
+  .premissa-item .label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .premissa-item .value {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .premissa-item .note {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* CUSTOS REVISADOS */
+  .custos-revisados {
+    margin-bottom: 40px;
+  }
+
+  .custos-revisados h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+
+  .custos-revisados p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .custos-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--white);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .custos-table th {
+    background: var(--ink);
+    color: var(--white);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  .custos-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  .custos-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .custos-table tr.subtotal td {
+    background: var(--bg);
+    font-weight: 500;
+  }
+
+  .custos-table tr.total td {
+    background: var(--accent);
+    color: var(--white);
+    font-weight: 500;
+  }
+
+  .old-value {
+    text-decoration: line-through;
+    color: var(--warn);
+    font-size: 12px;
+    margin-right: 4px;
+  }
+
+  .new-value {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .justify {
+    font-size: 11px;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* CENÁRIOS */
+  .cenarios h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+
+  .cenarios > p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+
+  .cenario-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .cenario-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .cenario-card.destaque {
+    border: 2px solid var(--accent);
+  }
+
+  .cenario-header {
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .cenario-header h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    margin-top: 6px;
+  }
+
+  .cenario-body {
+    padding: 16px 18px;
+  }
+
+  .cenario-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .cenario-row:last-child {
+    border-bottom: none;
+  }
+
+  .cenario-row .row-label {
+    color: var(--muted);
+  }
+
+  .cenario-row .row-value {
+    font-weight: 500;
+  }
+
+  .cenario-row.highlight .row-label {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .cenario-row.highlight .row-value {
+    font-size: 15px;
+  }
+
+  .positive { color: var(--accent); }
+  .negative { color: var(--warn); }
+  .neutral { color: var(--gold); }
+
+  .cenario-footer {
+    padding: 14px 18px;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* DISTRIBUIÇÃO PLANOS */
+  .planos-section {
+    margin-top: 40px;
+  }
+
+  .planos-section h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+
+  .planos-section > p {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .planos-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--white);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .planos-table th {
+    background: var(--ink);
+    color: var(--white);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  .planos-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .planos-table tr:last-child td {
+    border-bottom: none;
+    background: var(--bg);
+    font-weight: 500;
+  }
+
+  .bar-wrap {
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    width: 120px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--accent);
+  }
+
+  /* ALERTAS */
+  .alertas {
+    margin-top: 40px;
+  }
+
+  .alertas h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+
+  .alerta-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .alerta-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--warn);
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+
+  .alerta-item.ok {
+    border-left-color: var(--accent);
+  }
+
+  .alerta-item.caution {
+    border-left-color: var(--gold);
+  }
+
+  .alerta-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .alerta-text strong {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .alerta-text span {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <h1>Projeção de Cenários<br><em>Clínica Boutique de Saúde Mental</em></h1>
+    <p>2 Profissionais · 2 Salas · Rio de Janeiro · Break-even e viabilidade</p>
+  </header>
+
+  <!-- PREMISSAS -->
+  <div class="premissas">
+    <h2>Premissas do Modelo com 2 Profissionais</h2>
+    <div class="premissas-grid">
+      <div class="premissa-item">
+        <div class="label">Profissionais</div>
+        <div class="value">2 (você + psiquiatra)</div>
+        <div class="note">Sócios, sem repasse entre si</div>
+      </div>
+      <div class="premissa-item">
+        <div class="label">Salas</div>
+        <div class="value">2 salas</div>
+        <div class="note">Reduzido de 4 para 2</div>
+      </div>
+      <div class="premissa-item">
+        <div class="label">Planos mantidos</div>
+        <div class="value">Light, Premium, Executive, Family</div>
+        <div class="note">Ticket médio ~R$ 1.701</div>
+      </div>
+      <div class="premissa-item">
+        <div class="label">Repasse clínico</div>
+        <div class="value">Eliminado</div>
+        <div class="note">Sócios não pagam repasse entre si</div>
+      </div>
+      <div class="premissa-item">
+        <div class="label">Capacidade máx.</div>
+        <div class="value">~60 pacientes</div>
+        <div class="note">2 salas × 7 horários × 20 dias ÷ sessões/mês</div>
+      </div>
+      <div class="premissa-item">
+        <div class="label">Tributação estimada</div>
+        <div class="value">Simples Nacional</div>
+        <div class="note">Anexo III ou V — ver abaixo</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOS REVISADOS -->
+  <div class="custos-revisados">
+    <h2>Custos Revisados — 2 Salas, 2 Profissionais</h2>
+    <p>Ajustes baseados em pesquisa de mercado para clínicas de pequeno porte no Rio de Janeiro.</p>
+
+    <table class="custos-table">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Original</th>
+          <th>Revisado</th>
+          <th>Justificativa</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Aluguel (2 salas)</strong></td>
+          <td>R$ 4.000</td>
+          <td class="new-value">R$ 2.400–3.200</td>
+          <td class="justify">2 salas em vez de 4; Centro ~R$ 800–1.200/sala, Ipanema ~R$ 1.500–2.000/sala</td>
+        </tr>
+        <tr>
+          <td><strong>Condomínio + IPTU</strong></td>
+          <td>R$ 4.000</td>
+          <td class="new-value">R$ 2.000–2.500</td>
+          <td class="justify">Proporcional à redução de espaço</td>
+        </tr>
+        <tr>
+          <td><strong>Recepcionista</strong></td>
+          <td>R$ 4.000 (1 pessoa)</td>
+          <td class="new-value">R$ 2.800–3.200</td>
+          <td class="justify">1 recepcionista; salário médio RJ para a função</td>
+        </tr>
+        <tr>
+          <td><strong>Limpeza</strong></td>
+          <td>R$ 3.550</td>
+          <td class="new-value">R$ 1.200–1.800</td>
+          <td class="justify">Diarista 2–3x por semana é suficiente no início</td>
+        </tr>
+        <tr>
+          <td><strong>Administrativo</strong></td>
+          <td>R$ 4.000</td>
+          <td class="new-value">R$ 0 (Fase 1)</td>
+          <td class="justify">Você assume a gestão operacional; contratar quando ocupação justificar</td>
+        </tr>
+        <tr>
+          <td><strong>Jurídico</strong></td>
+          <td><span class="old-value">R$ 5.000</span></td>
+          <td class="new-value">R$ 800–1.500</td>
+          <td class="justify">Assessoria mensal para pequenas empresas de saúde: R$ 800–1.500/mês inclui contratos, LGPD, CFP/CRM. R$ 5.000 é valor de porte médio.</td>
+        </tr>
+        <tr>
+          <td><strong>Contabilidade</strong></td>
+          <td>R$ 3.000</td>
+          <td class="new-value">R$ 800–1.200</td>
+          <td class="justify">Contabilidade online para pequenas clínicas; inclui Simples Nacional</td>
+        </tr>
+        <tr>
+          <td><strong>Impostos</strong></td>
+          <td><span class="old-value">R$ 20.000</span></td>
+          <td class="new-value">R$ 6.000–9.000</td>
+          <td class="justify">Simples Nacional Anexo III (fator R ≥ 28%): alíquota efetiva ~8–12% sobre R$ 74.879. Se Anexo V: ~15–16%. Revisar com contador — R$ 20.000 representa 27% da receita, muito acima do esperado.</td>
+        </tr>
+        <tr>
+          <td><strong>Marketing (Ads + Site)</strong></td>
+          <td>R$ 2.200</td>
+          <td class="new-value">R$ 2.000–3.000</td>
+          <td class="justify">Manter ou aumentar — é o principal motor de captação no início</td>
+        </tr>
+        <tr>
+          <td><strong>Demais custos variáveis</strong></td>
+          <td>R$ 6.750</td>
+          <td class="new-value">R$ 4.500–5.500</td>
+          <td class="justify">Luz, telefone, sistema, materiais — proporcional a 2 salas</td>
+        </tr>
+        <tr class="subtotal">
+          <td><strong>Repasse clínico (eliminado)</strong></td>
+          <td>R$ 16.473</td>
+          <td class="new-value">R$ 0</td>
+          <td class="justify">Sócios não pagam repasse entre si — maior impacto positivo da mudança</td>
+        </tr>
+        <tr class="total">
+          <td><strong>TOTAL ESTIMADO</strong></td>
+          <td>R$ 57.700</td>
+          <td><strong>R$ 22.500–30.900</strong></td>
+          <td>Redução de ~46–61%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- CENÁRIOS -->
+  <div class="cenarios">
+    <h2>Projeção de Cenários — Mês a Mês</h2>
+    <p>Baseado em custo operacional médio de R$ 26.700/mês com 2 profissionais, sem repasse.</p>
+
+    <div class="cenario-grid">
+
+      <!-- CONSERVADOR -->
+      <div class="cenario-card">
+        <div class="cenario-header">
+          <div class="tag tag-red">Conservador</div>
+          <h3>Crescimento lento</h3>
+        </div>
+        <div class="cenario-body">
+          <div class="cenario-row">
+            <span class="row-label">Pacientes (mês 1–3)</span>
+            <span class="row-value">15–20</span>
+          </div>
+          <div class="cenario-row">
+            <span class="row-label">Receita mensal</span>
+            <span class="row-value">R$ 25–34k</span>
+          </div>
+          <div class="cenario-row">
+            <span class="row-label">Break-even</span>
+            <span class="row-value">~16 pacientes</span>
+          </div>
+          <div class="cenario-row">
+            <span class="row-label">Meses p/ estabilizar</span>
+            <span class="row-value">12–18 meses</span>
+          </div>
+          <div class="cenario-row highlight">
+            <span class="row-label">Resultado mês 6</span>
+            <span class="row-value negative">–R$ 3.000 a 0</span>
+          </div>
+          <div class="cenario-row highlight">
+            <span class="row-label">Resultado mês 12</span>
+            <span class="row-value neutral">R$ 2–6k</span>
+          </div>
+        </div>
+        <div class="cenario-footer">Captação orgânica apenas. Sem B2B. Exige reserva de caixa de 6–8 meses.</div>
+      </div>
+
+      <!-- MODERADO -->
+      <div class="cenario-card destaque">
+        <div class="cenario-header">
+          <div class="tag tag-gold">Moderado ★</div>
+          <h3>Cenário base</h3>
+        </div>
+        <div class="cenario-body">
+          <div class="cenario-row">
+            <span class="row-label">Pacientes (mês 1–3)</span>
+            <span class="row-value">20–28</span>
+          </div>
+          <div class="cenario-row">
+            <span class="row-label">Receita mensal</span>
+            <span class="row-value">R$ 34–48k</span>
+          </div>
+          <div class="cenario-row">
+            <span class="row-label">Break-even</span>
+            <span class="row-value">~16 pacientes</span>
+          </div>
+          <div class="cenario-row">
+            <span class="row-label">Meses p/ estabilizar</span>
+            <span class="row-value">6–10 meses</span>
+          </div>
+          <div class="cenario-row highlight">
+            <span class="row-label">Resultado mês 6</span>
+            <span class="row-value positive">R$ 5–12k</span>
+          </div>
+          <div class="cenario-row highlight">
+            <span class="row-label">Resultado mês 12</span>
+            <span class="row-value positive">R$ 12–22k</span>
+          </div>
+        </div>
+        <div class="cenario-footer">Ads ativos + 1 contrato B2B pequeno + presença digital do psiquiatra convertendo.</div>
+      </div>
+
+      <!-- OTIMISTA -->
+      <div class="cenario-card">
+        <div class="cenario-header">
+          <div class="tag tag-green">Otimista</div>
+          <h3>Acelerado</h3>
+        </div>
+        <div class="cenario-body">
+          <div class="cenario-row">
+            <span class="row-label">Pacientes (mês 1–3)</span>
+            <span class="row-value">30–40</span>
+          </div>
+          <div class="cenario-row">
+            <span class="row-label">Receita mensal</span>
+            <span class="row-value">R$ 51–68k</span>
+          </div>
+          <div class="cenario-row">
+            <span class="row-label">Break-even</span>
+            <span class="row-value">~16 pacientes</span>
+          </div>
+          <div class="cenario-row">
+            <span class="row-label">Meses p/ estabilizar</span>
+            <span class="row-value">3–5 meses</span>
+          </div>
+          <div class="cenario-row highlight">
+            <span class="row-label">Resultado mês 6</span>
+            <span class="row-value positive">R$ 20–35k</span>
+          </div>
+          <div class="cenario-row highlight">
+            <span class="row-label">Resultado mês 12</span>
+            <span class="row-value positive">R$ 30–50k</span>
+          </div>
+        </div>
+        <div class="cenario-footer">1–2 contratos B2B + base de indicações forte + lançamento com lista de espera.</div>
+      </div>
+
+    </div>
+
+    <!-- DISTRIBUIÇÃO PLANOS -->
+    <div class="planos-section">
+      <h2>Break-even com 2 Profissionais</h2>
+      <p>Com custo médio de R$ 26.700/mês e ticket médio de R$ 1.701, o break-even cai para aproximadamente 16 pacientes — antes eram 44.</p>
+
+      <table class="planos-table">
+        <thead>
+          <tr>
+            <th>Plano</th>
+            <th>Valor</th>
+            <th>% Mix</th>
+            <th>Pacientes (base 30)</th>
+            <th>Receita</th>
+            <th>Peso na receita</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Light</td>
+            <td>R$ 599</td>
+            <td>10%</td>
+            <td>3</td>
+            <td>R$ 1.797</td>
+            <td><span class="bar-wrap"><span class="bar-fill" style="width:5%"></span></span> 4%</td>
+          </tr>
+          <tr>
+            <td>Premium</td>
+            <td>R$ 1.390</td>
+            <td>60%</td>
+            <td>18</td>
+            <td>R$ 25.020</td>
+            <td><span class="bar-wrap"><span class="bar-fill" style="width:49%"></span></span> 49%</td>
+          </tr>
+          <tr>
+            <td>Executive</td>
+            <td>R$ 2.290</td>
+            <td>20%</td>
+            <td>6</td>
+            <td>R$ 13.740</td>
+            <td><span class="bar-wrap"><span class="bar-fill" style="width:27%"></span></span> 27%</td>
+          </tr>
+          <tr>
+            <td>Family</td>
+            <td>R$ 3.499</td>
+            <td>10%</td>
+            <td>3</td>
+            <td>R$ 10.497</td>
+            <td><span class="bar-wrap"><span class="bar-fill" style="width:21%"></span></span> 20%</td>
+          </tr>
+          <tr>
+            <td><strong>Total</strong></td>
+            <td>—</td>
+            <td>100%</td>
+            <td><strong>30 pacientes</strong></td>
+            <td><strong>R$ 51.054</strong></td>
+            <td><strong>Lucro ~R$ 24.354</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ALERTAS -->
+  <div class="alertas">
+    <h2>Pontos de Atenção</h2>
+    <div class="alerta-list">
+      <div class="alerta-item ok">
+        <div class="alerta-icon">✓</div>
+        <div class="alerta-text">
+          <strong>Break-even muito mais acessível</strong>
+          <span>Com 2 profissionais e sem repasse, o break-even cai de 44 para ~16 pacientes. Isso é atingível em 1–3 meses com captação ativa.</span>
+        </div>
+      </div>
+      <div class="alerta-item ok">
+        <div class="alerta-icon">✓</div>
+        <div class="alerta-text">
+          <strong>Eliminação do repasse é o maior ganho</strong>
+          <span>Os R$ 16.473 de repasse que saíam da receita bruta agora ficam na clínica. Isso muda completamente a viabilidade do modelo.</span>
+        </div>
+      </div>
+      <div class="alerta-item caution">
+        <div class="alerta-icon">◐</div>
+        <div class="alerta-text">
+          <strong>Tributação precisa ser validada com contador</strong>
+          <span>Simples Nacional Anexo III (se fator R ≥ 28%) pode trazer alíquota efetiva de 8–12%. Sociedade com psicólogo + psiquiatra pode exigir Ltda. — verificar CNAE e enquadramento com especialista.</span>
+        </div>
+      </div>
+      <div class="alerta-item caution">
+        <div class="alerta-icon">◐</div>
+        <div class="alerta-text">
+          <strong>Reserva de caixa mínima: R$ 50–80k</strong>
+          <span>Mesmo no cenário moderado, os primeiros 3–4 meses podem operar abaixo do break-even. A reserva cobre aluguel, reforma, equipamentos e operação inicial.</span>
+        </div>
+      </div>
+      <div class="alerta-item">
+        <div class="alerta-icon">!</div>
+        <div class="alerta-text">
+          <strong>Captação é o gargalo principal</strong>
+          <span>O modelo é viável — o risco não é financeiro, é comercial. Sem uma estratégia clara de captação (digital, B2B, indicação), mesmo 16 pacientes pode demorar mais do que o caixa aguenta.</span>
+        </div>
+      </div>
+      <div class="alerta-item">
+        <div class="alerta-icon">!</div>
+        <div class="alerta-text">
+          <strong>Acordo societário antes de qualquer gasto</strong>
+          <span>Nenhum valor deve ser desembolsado sem um contrato mínimo entre os sócios definindo aporte, participação e responsabilidades. Isso protege ambos.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Projeção elaborada para fins de planejamento estratégico · Valores estimados — consultar contador para tributação definitiva · Junho 2026
+  </footer>
+
+</div>
+</body>
+</html>
