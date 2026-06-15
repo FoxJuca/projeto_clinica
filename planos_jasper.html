@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planos — Clínica Jasper</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:           #F5F2ED;
+    --ink:          #1C1916;
+    --muted:        #7A746D;
+    --accent:       #2D5A4E;
+    --accent-mid:   #3D7A6A;
+    --accent-light: #EAF0EE;
+    --gold:         #9A7840;
+    --gold-light:   #F5EFE3;
+    --border:       #DDD8D0;
+    --white:        #FDFCFA;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 48px 24px 64px;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .page-eyebrow {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .page-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 48px;
+    font-weight: 300;
+    line-height: 1.0;
+    letter-spacing: -0.5px;
+  }
+
+  .page-title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .page-subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 300;
+    margin-top: 12px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+
+  /* ── GRID ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: start;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+
+  .card:hover {
+    box-shadow: 0 12px 40px rgba(45,90,78,0.10);
+    transform: translateY(-3px);
+  }
+
+  .card-featured {
+    border-color: var(--accent);
+    box-shadow: 0 4px 24px rgba(45,90,78,0.12);
+  }
+
+  /* ── CARD TOP ── */
+  .card-top {
+    padding: 24px 24px 20px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .card-featured .card-top {
+    background: var(--accent);
+  }
+
+  .badge-featured {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 8px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    background: var(--gold-light);
+    color: var(--gold);
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+
+  .card-featured .badge-featured {
+    background: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.9);
+  }
+
+  .card-plan {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .card-featured .card-plan {
+    color: rgba(255,255,255,0.6);
+  }
+
+  .card-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    font-weight: 300;
+    line-height: 1.0;
+    letter-spacing: -0.3px;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+
+  .card-featured .card-name {
+    color: var(--white);
+  }
+
+  .card-price-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+
+  .card-currency {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  .card-featured .card-currency {
+    color: rgba(255,255,255,0.7);
+  }
+
+  .card-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 42px;
+    font-weight: 400;
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: -1px;
+  }
+
+  .card-featured .card-price {
+    color: var(--white);
+  }
+
+  .card-price-custom {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .card-period {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 300;
+    margin-top: 4px;
+  }
+
+  .card-featured .card-period {
+    color: rgba(255,255,255,0.6);
+  }
+
+  /* ── CARD BODY ── */
+  .card-body {
+    padding: 20px 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* ── SECTION DENTRO DO CARD ── */
+  .feature-section {}
+
+  .feature-section-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .feature-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--ink);
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  .feature-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .feature-icon svg {
+    color: var(--accent);
+  }
+
+  .feature-count {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .feature-detail {
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 300;
+    margin-top: 1px;
+    display: block;
+  }
+
+  /* ── NOTA ── */
+  .card-note {
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.5;
+    padding: 10px 12px;
+    background: var(--gold-light);
+    border-radius: 4px;
+    border-left: 2px solid var(--gold);
+  }
+
+  /* ── CTA ── */
+  .card-footer {
+    padding: 0 24px 24px;
+  }
+
+  .card-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-radius: 4px;
+    border: 1.5px solid var(--accent);
+    color: var(--accent);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+  }
+
+  .card-btn:hover {
+    background: var(--accent);
+    color: var(--white);
+  }
+
+  .card-featured .card-footer .card-btn {
+    background: var(--accent);
+    color: var(--white);
+    border-color: var(--accent);
+  }
+
+  .card-featured .card-footer .card-btn:hover {
+    background: var(--accent-mid);
+    border-color: var(--accent-mid);
+  }
+
+  /* ── NOTA RODAPÉ ── */
+  .page-footnote {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 300;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+
+  .page-footnote strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 960px) {
+    .cards-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 600px) {
+    .cards-grid { grid-template-columns: 1fr; }
+    .page-title { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <p class="page-eyebrow">Clínica Jasper · Rio de Janeiro</p>
+  <h1 class="page-title">Nossos <em>Planos</em></h1>
+  <p class="page-subtitle">Todos os planos incluem avaliação inicial integrada com psicólogo e psiquiatra.</p>
+</div>
+
+<div class="cards-grid">
+
+  <!-- LIGHT -->
+  <div class="card">
+    <div class="card-top">
+      <p class="card-plan">Plano</p>
+      <h2 class="card-name">Light</h2>
+      <div class="card-price-wrap">
+        <span class="card-currency">R$</span>
+        <span class="card-price">699</span>
+      </div>
+      <p class="card-period">por mês</p>
+    </div>
+    <div class="card-body">
+
+      <div class="feature-section">
+        <p class="feature-section-label">Avaliação Inicial</p>
+        <ul class="feature-list">
+          <li class="feature-item">
+            <div class="feature-icon">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              Anamnese completa
+              <span class="feature-detail">Avaliação integrada PSI + PSQ na entrada</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="feature-section">
+        <p class="feature-section-label">Psicologia</p>
+        <ul class="feature-list">
+          <li class="feature-item">
+            <div class="feature-icon">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <span class="feature-count">2</span> sessões por mês
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="feature-section">
+        <p class="feature-section-label">Psiquiatria</p>
+        <ul class="feature-list">
+          <li class="feature-item">
+            <div class="feature-icon">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <span class="feature-count">1</span> consulta trimestral
+              <span class="feature-detail">Incluída na avaliação inicial</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="card-note">
+        Atendimentos extras disponíveis com condições especiais para membros do plano.
+      </div>
+
+    </div>
+    <div class="card-footer">
+      <a class="card-btn" href="#">Saiba mais</a>
+    </div>
+  </div>
+
+  <!-- PREMIUM -->
+  <div class="card">
+    <div class="card-top">
+      <p class="card-plan">Plano</p>
+      <h2 class="card-name">Premium</h2>
+      <div class="card-price-wrap">
+        <span class="card-currency">R$</span>
+        <span class="card-price">1.390</span>
+      </div>
+      <p class="card-period">por mês</p>
+    </div>
+    <div class="card-body">
+
+      <div class="feature-section">
+        <p class="feature-section-label">Avaliação Inicial</p>
+        <ul class="feature-list">
+          <li class="feature-item">
+            <div class="feature-icon">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              Anamnese completa
+              <span class="feature-detail">Avaliação integrada PSI + PSQ na entrada</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="feature-section">
+        <p class="feature-section-label">Psicologia</p>
+        <ul class="feature-list">
+          <li class="feature-item">
+            <div class="feature-icon">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <span class="feature-count">4</span> sessões por mês
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="feature-section">
+        <p class="feature-section-label">Psiquiatria</p>
+        <ul class="feature-list">
+          <li class="feature-item">
+            <div class="feature-icon">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <span class="feature-count">1</span> consulta bimestral
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="card-note">
+        Atendimentos extras disponíveis com condições especiais para membros do plano.
+      </div>
+
+    </div>
+    <div class="card-footer">
+      <a class="card-btn" href="#">Saiba mais</a>
+    </div>
+  </div>
+
+  <!-- EXECUTIVE -->
+  <div class="card card-featured">
+    <div class="card-top">
+      <span class="badge-featured">Mais completo</span>
+      <p class="card-plan">Plano</p>
+      <h2 class="card-name">Executive</h2>
+      <div class="card-price-wrap">
+        <span class="card-currency">R$</span>
+        <span class="card-price">2.290</span>
+      </div>
+      <p class="card-period">por mês</p>
+    </div>
+    <div class="card-body">
+
+      <div class="feature-section">
+        <p class="feature-section-label">Avaliação Inicial</p>
+        <ul class="feature-list">
+          <li class="feature-item">
+            <div class="feature-icon">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              Anamnese completa
+              <span class="feature-detail">Avaliação integrada PSI + PSQ na entrada</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="feature-section">
+        <p class="feature-section-label">Psicologia</p>
+        <ul class="feature-list">
+          <li class="feature-item">
+            <div class="feature-icon">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <span class="feature-count">4</span> sessões por mês
+            </div>
+          </li>
+          <li class="feature-item">
+            <div class="feature-icon">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <span class="feature-count">+1</span> sessão flex
+              <span class="feature-detail">Remarcação gratuita ou atendimento extra incluso</span>
+            </div>
+          </li>
+          <li class="feature-item">
+            <div class="feature-icon">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              Prioridade na agenda
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="feature-section">
+        <p class="feature-section-label">Psiquiatria</p>
+        <ul class="feature-list">
+          <li class="feature-item">
+            <div class="feature-icon">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <span class="feature-count">1</span> consulta mensal
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="card-note">
+        Atendimentos extras disponíveis com condições especiais para membros do plano.
+      </div>
+
+    </div>
+    <div class="card-footer">
+      <a class="card-btn" href="#">Saiba mais</a>
+    </div>
+  </div>
+
+  <!-- FAMILY -->
+  <div class="card">
+    <div class="card-top">
+      <p class="card-plan">Plano</p>
+      <h2 class="card-name">Family</h2>
+      <div class="card-price-wrap">
+        <span class="card-price-custom">Personalizado</span>
+      </div>
+      <p class="card-period">valor sob consulta</p>
+    </div>
+    <div class="card-body">
+
+      <div class="feature-section">
+        <p class="feature-section-label">Avaliação Inicial</p>
+        <ul class="feature-list">
+          <li class="feature-item">
+            <div class="feature-icon">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              Anamnese completa
+              <span class="feature-detail">Avaliação integrada PSI + PSQ para cada membro</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="feature-section">
+        <p class="feature-section-label">Psicologia</p>
+        <ul class="feature-list">
+          <li class="feature-item">
+            <div class="feature-icon">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              Sessões para titular e familiar
+              <span class="feature-detail">Quantidade definida conforme necessidade clínica</span>
+            </div>
+          </li>
+          <li class="feature-item">
+            <div class="feature-icon">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              Sessão flex inclusa
+              <span class="feature-detail">Remarcação gratuita ou atendimento extra</span>
+            </div>
+          </li>
+          <li class="feature-item">
+            <div class="feature-icon">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              Prioridade na agenda
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="feature-section">
+        <p class="feature-section-label">Psiquiatria</p>
+        <ul class="feature-list">
+          <li class="feature-item">
+            <div class="feature-icon">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              Frequência personalizada
+              <span class="feature-detail">Definida conforme avaliação clínica de cada membro</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="card-note">
+        Atendimentos extras disponíveis com condições especiais para membros do plano.
+      </div>
+
+    </div>
+    <div class="card-footer">
+      <a class="card-btn" href="#">Falar com a equipe</a>
+    </div>
+  </div>
+
+</div>
+
+<p class="page-footnote">
+  <strong>Todos os planos incluem avaliação inicial integrada</strong> — anamnese realizada em conjunto por psicólogo e psiquiatra antes do início do acompanhamento. Atendimentos presenciais em Copacabana / Botafogo.
+</p>
+
+</body>
+</html>
