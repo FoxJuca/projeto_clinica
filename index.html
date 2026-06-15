@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jasper — Painel do Projeto</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:           #F5F2ED;
+    --ink:          #1C1916;
+    --muted:        #7A746D;
+    --accent:       #2D5A4E;
+    --accent-mid:   #3D7A6A;
+    --accent-light: #EAF0EE;
+    --gold:         #9A7840;
+    --gold-light:   #F5EFE3;
+    --border:       #DDD8D0;
+    --white:        #FDFCFA;
+    --warn:         #B84C20;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    height: 60px;
+    background: rgba(245,242,237,0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 300;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .nav-logo em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 160px 48px 100px;
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: end;
+  }
+
+  .hero-left {}
+
+  .hero-eyebrow {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 72px;
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: -1px;
+    margin-bottom: 28px;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--accent);
+    display: block;
+  }
+
+  .hero-desc {
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--muted);
+    max-width: 400px;
+    line-height: 1.7;
+    margin-bottom: 40px;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--accent);
+    color: var(--white);
+    text-decoration: none;
+    padding: 14px 28px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    border-radius: 2px;
+    transition: background 0.2s;
+  }
+
+  .hero-cta:hover { background: var(--accent-mid); }
+
+  .hero-cta svg { flex-shrink: 0; }
+
+  .hero-right {
+    padding-bottom: 8px;
+  }
+
+  .status-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px;
+  }
+
+  .status-card-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .status-row:last-child { border-bottom: none; }
+
+  .status-label {
+    font-size: 13px;
+    color: var(--ink);
+    font-weight: 400;
+  }
+
+  .status-badge {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+
+  .badge-active   { background: var(--accent-light); color: var(--accent); }
+  .badge-pending  { background: var(--gold-light);   color: var(--gold); }
+  .badge-open     { background: #FAE8E3;              color: var(--warn); }
+
+  /* ── DIVIDER ── */
+  .divider {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 48px;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    max-width: 1100px;
+    margin: 60px auto 32px;
+    padding: 0 48px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .section-label span {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .section-label-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── CARDS GRID ── */
+  .cards {
+    max-width: 1100px;
+    margin: 0 auto 80px;
+    padding: 0 48px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 28px;
+    text-decoration: none;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+
+  .card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(45,90,78,0.08);
+  }
+
+  .card:hover::after { transform: scaleX(1); }
+
+  .card-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: default;
+  }
+
+  .card-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--accent-light);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .card-icon svg { color: var(--accent); }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .card-tag {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .tag-ready   { background: var(--accent-light); color: var(--accent); }
+  .tag-soon    { background: var(--gold-light);   color: var(--gold); }
+  .tag-planned { background: #F0F0F0;              color: var(--muted); }
+
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: -0.3px;
+  }
+
+  .card-title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .card-desc {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.6;
+    flex: 1;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--accent);
+    margin-top: auto;
+  }
+
+  .card-footer-muted {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 300;
+    margin-top: auto;
+  }
+
+  /* ── INFO STRIP ── */
+  .info-strip {
+    background: var(--ink);
+    padding: 60px 48px;
+  }
+
+  .info-strip-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+  }
+
+  .info-block {}
+
+  .info-block-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 8px;
+  }
+
+  .info-block-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--white);
+    line-height: 1.1;
+  }
+
+  .info-block-value em {
+    font-style: italic;
+    color: #A8D4C4;
+  }
+
+  .info-block-note {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    font-weight: 300;
+    margin-top: 4px;
+  }
+
+  /* ── TIMELINE ── */
+  .timeline-section {
+    max-width: 1100px;
+    margin: 0 auto 80px;
+    padding: 0 48px;
+  }
+
+  .timeline {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 8px;
+  }
+
+  .tl-item {
+    background: var(--white);
+    border: 1px solid var(--border);
+    padding: 24px;
+    position: relative;
+  }
+
+  .tl-item:first-child { border-radius: 8px 0 0 8px; }
+  .tl-item:last-child  { border-radius: 0 8px 8px 0; }
+
+  .tl-phase {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .tl-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 12px;
+  }
+
+  .tl-items {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .tl-items li {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 300;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .tl-items li::before {
+    content: '—';
+    color: var(--border);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .tl-period {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--gold);
+    margin-top: 16px;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 28px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .footer-brand em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .footer-note {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 0 24px; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 120px 24px 60px; gap: 40px; }
+    .hero-title { font-size: 52px; }
+    .cards { grid-template-columns: 1fr; padding: 0 24px; }
+    .info-strip-inner { grid-template-columns: 1fr 1fr; padding: 0; }
+    .info-strip { padding: 40px 24px; }
+    .timeline { grid-template-columns: 1fr; }
+    .tl-item:first-child { border-radius: 8px 8px 0 0; }
+    .tl-item:last-child  { border-radius: 0 0 8px 8px; }
+    .section-label, .timeline-section { padding: 0 24px; }
+    footer { flex-direction: column; gap: 8px; text-align: center; padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">J<em>a</em>sper</a>
+  <ul class="nav-links">
+    <li><a href="#documentos">Documentos</a></li>
+    <li><a href="#projeto">Projeto</a></li>
+    <li><a href="#fases">Fases</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">Rio de Janeiro · Copacabana / Botafogo</p>
+    <h1 class="hero-title">Clínica<br><em>Jasper</em></h1>
+    <p class="hero-desc">Painel interno do projeto — documentos, planejamento e acompanhamento da abertura da clínica boutique de saúde mental.</p>
+    <a href="checklist_jasper.html" class="hero-cta">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Ver checklist de abertura
+    </a>
+  </div>
+
+  <div class="hero-right">
+    <div class="status-card">
+      <p class="status-card-title">Status do Projeto</p>
+      <div class="status-row">
+        <span class="status-label">Estrutura societária</span>
+        <span class="status-badge badge-open">Em discussão</span>
+      </div>
+      <div class="status-row">
+        <span class="status-label">Escolha do imóvel</span>
+        <span class="status-badge badge-open">Em andamento</span>
+      </div>
+      <div class="status-row">
+        <span class="status-label">Empresa jurídica</span>
+        <span class="status-badge badge-pending">A contratar</span>
+      </div>
+      <div class="status-row">
+        <span class="status-label">Sistema de prontuário</span>
+        <span class="status-badge badge-pending">A definir</span>
+      </div>
+      <div class="status-row">
+        <span class="status-label">Identidade visual</span>
+        <span class="status-badge badge-pending">A desenvolver</span>
+      </div>
+      <div class="status-row">
+        <span class="status-label">CNPJ</span>
+        <span class="status-badge badge-pending">Aguardando</span>
+      </div>
+      <div class="status-row">
+        <span class="status-label">Checklist de abertura</span>
+        <span class="status-badge badge-active">Disponível</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INFO STRIP -->
+<div class="info-strip">
+  <div class="info-strip-inner">
+    <div class="info-block">
+      <p class="info-block-label">Modelo</p>
+      <p class="info-block-value">Boutique<br><em>sem convênio</em></p>
+      <p class="info-block-note">Psicologia + Psiquiatria integradas</p>
+    </div>
+    <div class="info-block">
+      <p class="info-block-label">Sócios</p>
+      <p class="info-block-value">6 – <em>7</em></p>
+      <p class="info-block-note">PSI + PSQ · ~1 dia/semana cada</p>
+    </div>
+    <div class="info-block">
+      <p class="info-block-label">Investimento estimado</p>
+      <p class="info-block-value">R$ 94k –<br><em>R$ 160k</em></p>
+      <p class="info-block-note">Inclui reserva operacional 3–4 meses</p>
+    </div>
+    <div class="info-block">
+      <p class="info-block-label">Break-even</p>
+      <p class="info-block-value">~<em>16</em> pct</p>
+      <p class="info-block-note">Com 2 profissionais · Cenário conservador</p>
+    </div>
+  </div>
+</div>
+
+<!-- DOCUMENTOS -->
+<div id="documentos">
+  <div class="section-label">
+    <span>Documentos do Projeto</span>
+    <div class="section-label-line"></div>
+  </div>
+
+  <div class="cards">
+
+    <!-- CHECKLIST -->
+    <a class="card" href="checklist_jasper.html">
+      <div class="card-top">
+        <div class="card-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10l4 4 8-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="2" y="2" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.5"/></svg>
+        </div>
+        <span class="card-tag tag-ready">Disponível</span>
+      </div>
+      <div>
+        <h2 class="card-title">Checklist de<br><em>Abertura</em></h2>
+      </div>
+      <p class="card-desc">Todos os documentos, alvarás, registros e etapas necessárias para abrir a clínica — com estimativas de custo e ordem cronológica.</p>
+      <div class="card-footer">
+        Abrir documento
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </a>
+
+    <!-- PLANOS -->
+    <a class="card card-disabled" href="#">
+      <div class="card-top">
+        <div class="card-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <span class="card-tag tag-soon">Em breve</span>
+      </div>
+      <div>
+        <h2 class="card-title">Tabela de<br><em>Planos</em></h2>
+      </div>
+      <p class="card-desc">Estrutura dos planos Light, Premium, Executive e Family — sessões, benefícios, valores e posicionamento de cada um.</p>
+      <p class="card-footer-muted">A publicar</p>
+    </a>
+
+    <!-- DESPESAS -->
+    <a class="card card-disabled" href="#">
+      <div class="card-top">
+        <div class="card-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3v14M5 7h10M5 13h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="2" y="2" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.5"/></svg>
+        </div>
+        <span class="card-tag tag-soon">Em breve</span>
+      </div>
+      <div>
+        <h2 class="card-title">Despesas<br><em>Operacionais</em></h2>
+      </div>
+      <p class="card-desc">Custos fixos e variáveis mensais da clínica — aluguel, salários, impostos, marketing e repasse dos profissionais.</p>
+      <p class="card-footer-muted">A publicar</p>
+    </a>
+
+    <!-- PROJEÇÕES -->
+    <a class="card card-disabled" href="#">
+      <div class="card-top">
+        <div class="card-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15l4-5 4 2 6-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="card-tag tag-planned">Planejado</span>
+      </div>
+      <div>
+        <h2 class="card-title">Projeção de<br><em>Cenários</em></h2>
+      </div>
+      <p class="card-desc">Cenários conservador, moderado e otimista — receita, ocupação e lucro projetados para 6 meses e 1 ano de operação.</p>
+      <p class="card-footer-muted">A publicar</p>
+    </a>
+
+    <!-- ESTRUTURA SOCIETÁRIA -->
+    <a class="card card-disabled" href="#">
+      <div class="card-top">
+        <div class="card-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6" r="2.5" stroke="currentColor" stroke-width="1.5"/><circle cx="4" cy="15" r="2" stroke="currentColor" stroke-width="1.5"/><circle cx="16" cy="15" r="2" stroke="currentColor" stroke-width="1.5"/><path d="M10 8.5v3M10 11.5l-4 1.5M10 11.5l4 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <span class="card-tag tag-planned">Planejado</span>
+      </div>
+      <div>
+        <h2 class="card-title">Estrutura<br><em>Societária</em></h2>
+      </div>
+      <p class="card-desc">Participações, aportes, critérios de entrada e modelo de governança entre os sócios fundadores e associados.</p>
+      <p class="card-footer-muted">A publicar</p>
+    </a>
+
+    <!-- DIFERENCIAL -->
+    <a class="card card-disabled" href="#">
+      <div class="card-top">
+        <div class="card-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 3l1.8 5.5H17l-4.6 3.4 1.8 5.5L10 14l-4.2 3.4 1.8-5.5L3 8.5h5.2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        </div>
+        <span class="card-tag tag-planned">Planejado</span>
+      </div>
+      <div>
+        <h2 class="card-title">Modelo<br><em>Consilium</em></h2>
+      </div>
+      <p class="card-desc">O diferencial clínico da Jasper — protocolo de cuidado integrado PSI+PSQ, longitudinalidade e discussão de casos entre profissionais.</p>
+      <p class="card-footer-muted">A publicar</p>
+    </a>
+
+  </div>
+</div>
+
+<!-- FASES -->
+<div id="fases">
+  <div class="section-label">
+    <span>Fases do Projeto</span>
+    <div class="section-label-line"></div>
+  </div>
+
+  <div class="timeline-section">
+    <div class="timeline">
+      <div class="tl-item">
+        <p class="tl-phase">Fase 1 — Atual</p>
+        <h3 class="tl-title">Construção</h3>
+        <ul class="tl-items">
+          <li>Definir estrutura societária e aportes</li>
+          <li>Contratar empresa jurídica</li>
+          <li>Escolher e assinar imóvel</li>
+          <li>Abrir CNPJ e registros nos conselhos</li>
+          <li>Protocolar Licença Sanitária</li>
+          <li>Reforma e ambientação boutique</li>
+          <li>Atingir break-even — ~16 pacientes</li>
+        </ul>
+        <p class="tl-period">2026 – 2027</p>
+      </div>
+      <div class="tl-item">
+        <p class="tl-phase">Fase 2</p>
+        <h3 class="tl-title">Escala</h3>
+        <ul class="tl-items">
+          <li>Trazer profissionais associados</li>
+          <li>Entrar no mercado B2B corporativo</li>
+          <li>Parceria com neuropsicólogo</li>
+          <li>Sócios fundadores saem dos atendimentos</li>
+          <li>Pró-labore + divisão de lucros</li>
+          <li>Segunda unidade — Centro do Rio</li>
+        </ul>
+        <p class="tl-period">2027 – 2030</p>
+      </div>
+      <div class="tl-item">
+        <p class="tl-phase">Fase 3</p>
+        <h3 class="tl-title">Expansão</h3>
+        <ul class="tl-items">
+          <li>Novas filiais — modelo de participação</li>
+          <li>NR1 e saúde mental corporativa</li>
+          <li>Avaliações neuropsicológicas e forenses</li>
+          <li>Atendimento pediátrico e geriátrico</li>
+          <li>Estrutura de franquia</li>
+        </ul>
+        <p class="tl-period">2030 – 2041</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-brand">J<em>a</em>sper</span>
+  <span class="footer-note">Painel interno · Uso restrito aos sócios · Junho 2026</span>
+</footer>
+
+</body>
+</html>
