@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projeções Financeiras — Clínica Jasper</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:           #F5F2ED;
+    --ink:          #1C1916;
+    --muted:        #7A746D;
+    --accent:       #2D5A4E;
+    --accent-light: #EAF0EE;
+    --gold:         #9A7840;
+    --gold-light:   #F5EFE3;
+    --border:       #DDD8D0;
+    --white:        #FDFCFA;
+    --warn:         #B84C20;
+    --warn-light:   #FAE8E3;
+    --pos:          #2D5A4E;
+    --pos-light:    #EAF0EE;
+    --neg:          #B84C20;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 48px 32px 80px;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    max-width: 1300px;
+    margin: 0 auto 48px;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .page-header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 44px;
+    font-weight: 300;
+    line-height: 1.0;
+    letter-spacing: -0.5px;
+  }
+
+  .page-header h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .page-meta {
+    text-align: right;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.7;
+  }
+
+  /* ── PREMISSAS ── */
+  .premissas {
+    max-width: 1300px;
+    margin: 0 auto 48px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 28px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+
+  .premissa-item {}
+
+  .premissa-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .premissa-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+
+  .premissa-value em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .premissa-note {
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 300;
+    margin-top: 2px;
+  }
+
+  /* ── CENÁRIOS GRID ── */
+  .scenarios {
+    max-width: 1300px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* ── SCENARIO CARD ── */
+  .scenario {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .scenario-conservador { border-top: 3px solid #B84C20; }
+  .scenario-moderado    { border-top: 3px solid var(--gold); }
+  .scenario-otimista    { border-top: 3px solid var(--accent); }
+
+  /* ── SCENARIO HEADER ── */
+  .scenario-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .scenario-eyebrow {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .scenario-conservador .scenario-eyebrow { color: var(--warn); }
+  .scenario-moderado    .scenario-eyebrow { color: var(--gold); }
+  .scenario-otimista    .scenario-eyebrow { color: var(--accent); }
+
+  .scenario-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: -0.3px;
+    margin-bottom: 12px;
+  }
+
+  .scenario-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .stat-box {
+    background: var(--bg);
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+
+  .stat-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 2px;
+  }
+
+  .stat-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+
+  .stat-value.positive { color: var(--pos); }
+  .stat-value.warn     { color: var(--warn); }
+  .stat-value.gold     { color: var(--gold); }
+
+  /* ── TABELA ── */
+  .scenario-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11.5px;
+  }
+
+  .scenario-table thead tr {
+    background: var(--bg);
+  }
+
+  .scenario-table th {
+    padding: 8px 12px;
+    text-align: right;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .scenario-table th:first-child { text-align: left; }
+
+  .scenario-table td {
+    padding: 7px 12px;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .scenario-table td:first-child {
+    text-align: left;
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  .scenario-table tr:last-child td { border-bottom: none; }
+
+  .scenario-table tr:hover td { background: #F9F7F4; }
+
+  /* linhas de marco */
+  .row-marco td {
+    background: var(--gold-light) !important;
+    font-weight: 600;
+  }
+
+  .row-marco td:first-child { color: var(--gold) !important; }
+
+  /* linha de break-even */
+  .row-breakeven td {
+    background: var(--accent-light) !important;
+    font-weight: 600;
+  }
+
+  .row-breakeven td:first-child {
+    color: var(--accent) !important;
+  }
+
+  /* valores negativos e positivos */
+  .neg { color: var(--neg) !important; }
+  .pos { color: var(--pos) !important; }
+
+  /* ── RODAPÉ DO CENÁRIO ── */
+  .scenario-footer {
+    padding: 14px 24px;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    font-size: 10px;
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.5;
+  }
+
+  .scenario-footer strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* ── RESUMO FINAL ── */
+  .resumo {
+    max-width: 1300px;
+    margin: 40px auto 0;
+    background: var(--ink);
+    color: var(--white);
+    border-radius: 8px;
+    padding: 28px 32px;
+  }
+
+  .resumo h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    font-weight: 300;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+  }
+
+  .resumo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 20px;
+  }
+
+  .resumo-col-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .resumo-col-title.c { color: #E8A090; }
+  .resumo-col-title.m { color: #D4B878; }
+  .resumo-col-title.o { color: #A8D4C4; }
+
+  .resumo-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    font-size: 12px;
+  }
+
+  .resumo-row .rl { color: rgba(255,255,255,0.5); }
+  .resumo-row .rv { color: var(--white); font-weight: 500; }
+  .resumo-row .rv.pos { color: #A8D4C4; }
+  .resumo-row .rv.neg { color: #E8A090; }
+
+  .resumo-obs {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    font-weight: 300;
+    line-height: 1.6;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+
+  footer {
+    max-width: 1300px;
+    margin: 40px auto 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 10px;
+    color: var(--muted);
+    text-align: center;
+    font-weight: 300;
+  }
+
+  @media (max-width: 1100px) {
+    .scenarios { grid-template-columns: 1fr; }
+    .premissas { grid-template-columns: repeat(2, 1fr); }
+    .resumo-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="page-header">
+  <h1>Projeções<br><em>Financeiras</em></h1>
+  <div class="page-meta">
+    Clínica Jasper · Uso interno<br>
+    Três cenários · 18 meses<br>
+    Junho 2026
+  </div>
+</div>
+
+<!-- PREMISSAS -->
+<div class="premissas">
+  <div class="premissa-item">
+    <p class="premissa-label">Despesas operacionais</p>
+    <p class="premissa-value">R$ <em>28.600</em></p>
+    <p class="premissa-note">Fixas + variáveis mensais</p>
+  </div>
+  <div class="premissa-item">
+    <p class="premissa-label">Ticket médio por paciente</p>
+    <p class="premissa-value">R$ <em>1.712</em></p>
+    <p class="premissa-note">Mix: 10% Light · 50% Premium · 30% Exec · 10% Family</p>
+  </div>
+  <div class="premissa-item">
+    <p class="premissa-label">Break-even estimado</p>
+    <p class="premissa-value"><em>~17</em> pacientes</p>
+    <p class="premissa-note">Receita bruta ≥ despesas operacionais</p>
+  </div>
+  <div class="premissa-item">
+    <p class="premissa-label">Referência de mercado</p>
+    <p class="premissa-value"><em>8–14</em> meses</p>
+    <p class="premissa-note">Média para clínicas privadas sem convênio no Brasil</p>
+  </div>
+</div>
+
+<!-- CENÁRIOS -->
+<div class="scenarios">
+
+  <!-- CONSERVADOR -->
+  <div class="scenario scenario-conservador">
+    <div class="scenario-header">
+      <p class="scenario-eyebrow">Cenário 01</p>
+      <h2 class="scenario-title">Conservador</h2>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:12px;font-weight:300;">Captação lenta · 1–2 pacientes/mês</p>
+      <div class="scenario-stats">
+        <div class="stat-box">
+          <p class="stat-label">Break-even</p>
+          <p class="stat-value warn">Mês 15</p>
+        </div>
+        <div class="stat-box">
+          <p class="stat-label">Caixa mínimo</p>
+          <p class="stat-value warn">~R$ 130k</p>
+        </div>
+        <div class="stat-box">
+          <p class="stat-label">Resultado 12m</p>
+          <p class="stat-value warn">-R$ 130k</p>
+        </div>
+        <div class="stat-box">
+          <p class="stat-label">Resultado 18m</p>
+          <p class="stat-value gold">-R$ 110k</p>
+        </div>
+      </div>
+    </div>
+
+    <table class="scenario-table">
+      <thead>
+        <tr>
+          <th>Período</th>
+          <th>Pcts</th>
+          <th>Receita</th>
+          <th>Despesas</th>
+          <th>Resultado</th>
+          <th>Acumulado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Mês 1</td><td>2</td><td>R$ 3.424</td><td>R$ 28.600</td><td class="neg">-R$ 25.176</td><td class="neg">-R$ 25.176</td>
+        </tr>
+        <tr>
+          <td>Mês 2</td><td>4</td><td>R$ 6.848</td><td>R$ 28.600</td><td class="neg">-R$ 21.752</td><td class="neg">-R$ 46.928</td>
+        </tr>
+        <tr>
+          <td>Mês 3</td><td>6</td><td>R$ 10.272</td><td>R$ 28.600</td><td class="neg">-R$ 18.328</td><td class="neg">-R$ 65.256</td>
+        </tr>
+        <tr>
+          <td>Mês 4</td><td>8</td><td>R$ 13.696</td><td>R$ 28.600</td><td class="neg">-R$ 14.904</td><td class="neg">-R$ 80.160</td>
+        </tr>
+        <tr>
+          <td>Mês 5</td><td>10</td><td>R$ 17.120</td><td>R$ 28.600</td><td class="neg">-R$ 11.480</td><td class="neg">-R$ 91.640</td>
+        </tr>
+        <tr class="row-marco">
+          <td>Mês 6 ★</td><td>11</td><td>R$ 18.832</td><td>R$ 28.600</td><td class="neg">-R$ 9.768</td><td class="neg">-R$ 101.408</td>
+        </tr>
+        <tr>
+          <td>Mês 7</td><td>12</td><td>R$ 20.544</td><td>R$ 28.600</td><td class="neg">-R$ 8.056</td><td class="neg">-R$ 109.464</td>
+        </tr>
+        <tr>
+          <td>Mês 8</td><td>13</td><td>R$ 22.256</td><td>R$ 28.600</td><td class="neg">-R$ 6.344</td><td class="neg">-R$ 115.808</td>
+        </tr>
+        <tr>
+          <td>Mês 9</td><td>14</td><td>R$ 23.968</td><td>R$ 28.600</td><td class="neg">-R$ 4.632</td><td class="neg">-R$ 120.440</td>
+        </tr>
+        <tr>
+          <td>Mês 10</td><td>15</td><td>R$ 25.680</td><td>R$ 28.600</td><td class="neg">-R$ 2.920</td><td class="neg">-R$ 123.360</td>
+        </tr>
+        <tr>
+          <td>Mês 11</td><td>16</td><td>R$ 27.392</td><td>R$ 28.600</td><td class="neg">-R$ 1.208</td><td class="neg">-R$ 124.568</td>
+        </tr>
+        <tr class="row-marco">
+          <td>Mês 12 ★</td><td>16</td><td>R$ 27.392</td><td>R$ 28.600</td><td class="neg">-R$ 1.208</td><td class="neg">-R$ 125.776</td>
+        </tr>
+        <tr>
+          <td>Mês 13</td><td>16</td><td>R$ 27.392</td><td>R$ 28.600</td><td class="neg">-R$ 1.208</td><td class="neg">-R$ 126.984</td>
+        </tr>
+        <tr>
+          <td>Mês 14</td><td>16</td><td>R$ 27.392</td><td>R$ 28.600</td><td class="neg">-R$ 1.208</td><td class="neg">-R$ 128.192</td>
+        </tr>
+        <tr class="row-breakeven">
+          <td>Mês 15 ✓</td><td>17</td><td>R$ 29.104</td><td>R$ 28.600</td><td class="pos">+R$ 504</td><td class="neg">-R$ 127.688</td>
+        </tr>
+        <tr>
+          <td>Mês 16</td><td>18</td><td>R$ 30.816</td><td>R$ 28.600</td><td class="pos">+R$ 2.216</td><td class="neg">-R$ 125.472</td>
+        </tr>
+        <tr>
+          <td>Mês 17</td><td>18</td><td>R$ 30.816</td><td>R$ 28.600</td><td class="pos">+R$ 2.216</td><td class="neg">-R$ 123.256</td>
+        </tr>
+        <tr class="row-marco">
+          <td>Mês 18 ★</td><td>19</td><td>R$ 32.528</td><td>R$ 28.600</td><td class="pos">+R$ 3.928</td><td class="neg">-R$ 119.328</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="scenario-footer">
+      <strong>Atenção:</strong> exige capital de giro de ~R$ 130k apenas para operação. Requer aporte inicial robusto e reserva de caixa garantida antes da abertura.
+    </div>
+  </div>
+
+  <!-- MODERADO -->
+  <div class="scenario scenario-moderado">
+    <div class="scenario-header">
+      <p class="scenario-eyebrow">Cenário 02</p>
+      <h2 class="scenario-title">Moderado</h2>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:12px;font-weight:300;">Captação média · 2–3 pacientes/mês</p>
+      <div class="scenario-stats">
+        <div class="stat-box">
+          <p class="stat-label">Break-even</p>
+          <p class="stat-value gold">Mês 6</p>
+        </div>
+        <div class="stat-box">
+          <p class="stat-label">Caixa mínimo</p>
+          <p class="stat-value gold">~R$ 66k</p>
+        </div>
+        <div class="stat-box">
+          <p class="stat-label">Resultado 12m</p>
+          <p class="stat-value gold">~-R$ 20k</p>
+        </div>
+        <div class="stat-box">
+          <p class="stat-label">Resultado 18m</p>
+          <p class="stat-value positive">+R$ 80k</p>
+        </div>
+      </div>
+    </div>
+
+    <table class="scenario-table">
+      <thead>
+        <tr>
+          <th>Período</th>
+          <th>Pcts</th>
+          <th>Receita</th>
+          <th>Despesas</th>
+          <th>Resultado</th>
+          <th>Acumulado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Mês 1</td><td>3</td><td>R$ 5.136</td><td>R$ 28.600</td><td class="neg">-R$ 23.464</td><td class="neg">-R$ 23.464</td>
+        </tr>
+        <tr>
+          <td>Mês 2</td><td>6</td><td>R$ 10.272</td><td>R$ 28.600</td><td class="neg">-R$ 18.328</td><td class="neg">-R$ 41.792</td>
+        </tr>
+        <tr>
+          <td>Mês 3</td><td>9</td><td>R$ 15.408</td><td>R$ 28.600</td><td class="neg">-R$ 13.192</td><td class="neg">-R$ 54.984</td>
+        </tr>
+        <tr>
+          <td>Mês 4</td><td>12</td><td>R$ 20.544</td><td>R$ 28.600</td><td class="neg">-R$ 8.056</td><td class="neg">-R$ 63.040</td>
+        </tr>
+        <tr>
+          <td>Mês 5</td><td>15</td><td>R$ 25.680</td><td>R$ 28.600</td><td class="neg">-R$ 2.920</td><td class="neg">-R$ 65.960</td>
+        </tr>
+        <tr class="row-breakeven">
+          <td>Mês 6 ✓★</td><td>17</td><td>R$ 29.104</td><td>R$ 28.600</td><td class="pos">+R$ 504</td><td class="neg">-R$ 65.456</td>
+        </tr>
+        <tr>
+          <td>Mês 7</td><td>19</td><td>R$ 32.528</td><td>R$ 28.600</td><td class="pos">+R$ 3.928</td><td class="neg">-R$ 61.528</td>
+        </tr>
+        <tr>
+          <td>Mês 8</td><td>20</td><td>R$ 34.240</td><td>R$ 28.600</td><td class="pos">+R$ 5.640</td><td class="neg">-R$ 55.888</td>
+        </tr>
+        <tr>
+          <td>Mês 9</td><td>22</td><td>R$ 37.664</td><td>R$ 28.600</td><td class="pos">+R$ 9.064</td><td class="neg">-R$ 46.824</td>
+        </tr>
+        <tr>
+          <td>Mês 10</td><td>24</td><td>R$ 41.088</td><td>R$ 28.600</td><td class="pos">+R$ 12.488</td><td class="neg">-R$ 34.336</td>
+        </tr>
+        <tr>
+          <td>Mês 11</td><td>26</td><td>R$ 44.512</td><td>R$ 28.600</td><td class="pos">+R$ 15.912</td><td class="neg">-R$ 18.424</td>
+        </tr>
+        <tr class="row-marco">
+          <td>Mês 12 ★</td><td>28</td><td>R$ 47.936</td><td>R$ 28.600</td><td class="pos">+R$ 19.336</td><td class="neg">-R$ 18.424</td>
+        </tr>
+        <tr>
+          <td>Mês 13</td><td>29</td><td>R$ 49.648</td><td>R$ 28.600</td><td class="pos">+R$ 21.048</td><td class="pos">+R$ 2.624</td>
+        </tr>
+        <tr>
+          <td>Mês 14</td><td>31</td><td>R$ 53.072</td><td>R$ 28.600</td><td class="pos">+R$ 24.472</td><td class="pos">+R$ 27.096</td>
+        </tr>
+        <tr>
+          <td>Mês 15</td><td>32</td><td>R$ 54.784</td><td>R$ 28.600</td><td class="pos">+R$ 26.184</td><td class="pos">+R$ 53.280</td>
+        </tr>
+        <tr>
+          <td>Mês 16</td><td>33</td><td>R$ 56.496</td><td>R$ 28.600</td><td class="pos">+R$ 27.896</td><td class="pos">+R$ 81.176</td>
+        </tr>
+        <tr>
+          <td>Mês 17</td><td>34</td><td>R$ 58.208</td><td>R$ 28.600</td><td class="pos">+R$ 29.608</td><td class="pos">+R$ 110.784</td>
+        </tr>
+        <tr class="row-marco">
+          <td>Mês 18 ★</td><td>35</td><td>R$ 59.920</td><td>R$ 28.600</td><td class="pos">+R$ 31.320</td><td class="pos">+R$ 142.104</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="scenario-footer">
+      <strong>Cenário mais realista</strong> dado o perfil da clínica — presença digital dos sócios, 7 profissionais com rede de indicação e posicionamento diferenciado. Break-even no mês 6 é alcançável com captação bem executada.
+    </div>
+  </div>
+
+  <!-- OTIMISTA -->
+  <div class="scenario scenario-otimista">
+    <div class="scenario-header">
+      <p class="scenario-eyebrow">Cenário 03</p>
+      <h2 class="scenario-title">Otimista</h2>
+      <p style="font-size:11px;color:var(--muted);margin-bottom:12px;font-weight:300;">Captação agressiva · 4–5 pacientes/mês</p>
+      <div class="scenario-stats">
+        <div class="stat-box">
+          <p class="stat-label">Break-even</p>
+          <p class="stat-value positive">Mês 4</p>
+        </div>
+        <div class="stat-box">
+          <p class="stat-label">Caixa mínimo</p>
+          <p class="stat-value positive">~R$ 35k</p>
+        </div>
+        <div class="stat-box">
+          <p class="stat-label">Resultado 12m</p>
+          <p class="stat-value positive">+R$ 120k</p>
+        </div>
+        <div class="stat-box">
+          <p class="stat-label">Resultado 18m</p>
+          <p class="stat-value positive">+R$ 480k</p>
+        </div>
+      </div>
+    </div>
+
+    <table class="scenario-table">
+      <thead>
+        <tr>
+          <th>Período</th>
+          <th>Pcts</th>
+          <th>Receita</th>
+          <th>Despesas</th>
+          <th>Resultado</th>
+          <th>Acumulado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Mês 1</td><td>5</td><td>R$ 8.560</td><td>R$ 28.600</td><td class="neg">-R$ 20.040</td><td class="neg">-R$ 20.040</td>
+        </tr>
+        <tr>
+          <td>Mês 2</td><td>10</td><td>R$ 17.120</td><td>R$ 28.600</td><td class="neg">-R$ 11.480</td><td class="neg">-R$ 31.520</td>
+        </tr>
+        <tr>
+          <td>Mês 3</td><td>15</td><td>R$ 25.680</td><td>R$ 28.600</td><td class="neg">-R$ 2.920</td><td class="neg">-R$ 34.440</td>
+        </tr>
+        <tr class="row-breakeven">
+          <td>Mês 4 ✓</td><td>18</td><td>R$ 30.816</td><td>R$ 28.600</td><td class="pos">+R$ 2.216</td><td class="neg">-R$ 32.224</td>
+        </tr>
+        <tr>
+          <td>Mês 5</td><td>22</td><td>R$ 37.664</td><td>R$ 28.600</td><td class="pos">+R$ 9.064</td><td class="neg">-R$ 23.160</td>
+        </tr>
+        <tr class="row-marco">
+          <td>Mês 6 ★</td><td>26</td><td>R$ 44.512</td><td>R$ 28.600</td><td class="pos">+R$ 15.912</td><td class="neg">-R$ 7.248</td>
+        </tr>
+        <tr>
+          <td>Mês 7</td><td>30</td><td>R$ 51.360</td><td>R$ 28.600</td><td class="pos">+R$ 22.760</td><td class="pos">+R$ 15.512</td>
+        </tr>
+        <tr>
+          <td>Mês 8</td><td>32</td><td>R$ 54.784</td><td>R$ 28.600</td><td class="pos">+R$ 26.184</td><td class="pos">+R$ 41.696</td>
+        </tr>
+        <tr>
+          <td>Mês 9</td><td>35</td><td>R$ 59.920</td><td>R$ 28.600</td><td class="pos">+R$ 31.320</td><td class="pos">+R$ 73.016</td>
+        </tr>
+        <tr>
+          <td>Mês 10</td><td>38</td><td>R$ 65.056</td><td>R$ 28.600</td><td class="pos">+R$ 36.456</td><td class="pos">+R$ 109.472</td>
+        </tr>
+        <tr>
+          <td>Mês 11</td><td>41</td><td>R$ 70.192</td><td>R$ 28.600</td><td class="pos">+R$ 41.592</td><td class="pos">+R$ 151.064</td>
+        </tr>
+        <tr class="row-marco">
+          <td>Mês 12 ★</td><td>44</td><td>R$ 75.328</td><td>R$ 28.600</td><td class="pos">+R$ 46.728</td><td class="pos">+R$ 197.792</td>
+        </tr>
+        <tr>
+          <td>Mês 13</td><td>46</td><td>R$ 78.752</td><td>R$ 28.600</td><td class="pos">+R$ 50.152</td><td class="pos">+R$ 247.944</td>
+        </tr>
+        <tr>
+          <td>Mês 14</td><td>48</td><td>R$ 82.176</td><td>R$ 28.600</td><td class="pos">+R$ 53.576</td><td class="pos">+R$ 301.520</td>
+        </tr>
+        <tr>
+          <td>Mês 15</td><td>50</td><td>R$ 85.600</td><td>R$ 28.600</td><td class="pos">+R$ 57.000</td><td class="pos">+R$ 358.520</td>
+        </tr>
+        <tr>
+          <td>Mês 16</td><td>52</td><td>R$ 89.024</td><td>R$ 28.600</td><td class="pos">+R$ 60.424</td><td class="pos">+R$ 418.944</td>
+        </tr>
+        <tr>
+          <td>Mês 17</td><td>53</td><td>R$ 90.736</td><td>R$ 28.600</td><td class="pos">+R$ 62.136</td><td class="pos">+R$ 481.080</td>
+        </tr>
+        <tr class="row-marco">
+          <td>Mês 18 ★</td><td>55</td><td>R$ 94.160</td><td>R$ 28.600</td><td class="pos">+R$ 65.560</td><td class="pos">+R$ 546.640</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="scenario-footer">
+      <strong>Atenção:</strong> cenário exige estratégia de marketing agressiva e operação muito bem azeitada desde o dia 1. Crescimento acima de 40 pacientes começa a pressionar a capacidade de 4 salas — expansão pode ser necessária.
+    </div>
+  </div>
+
+</div>
+
+<!-- RESUMO COMPARATIVO -->
+<div class="resumo">
+  <h2>Resumo Comparativo</h2>
+  <div class="resumo-grid">
+
+    <div>
+      <p class="resumo-col-title c">Conservador</p>
+      <div class="resumo-row"><span class="rl">Break-even</span><span class="rv neg">Mês 15</span></div>
+      <div class="resumo-row"><span class="rl">Captação/mês</span><span class="rv">1–2 pacientes</span></div>
+      <div class="resumo-row"><span class="rl">Caixa mínimo</span><span class="rv neg">~R$ 130.000</span></div>
+      <div class="resumo-row"><span class="rl">Resultado 6m</span><span class="rv neg">-R$ 101.408</span></div>
+      <div class="resumo-row"><span class="rl">Resultado 12m</span><span class="rv neg">-R$ 125.776</span></div>
+      <div class="resumo-row"><span class="rl">Resultado 18m</span><span class="rv neg">-R$ 119.328</span></div>
+    </div>
+
+    <div>
+      <p class="resumo-col-title m">Moderado</p>
+      <div class="resumo-row"><span class="rl">Break-even</span><span class="rv" style="color:#D4B878">Mês 6</span></div>
+      <div class="resumo-row"><span class="rl">Captação/mês</span><span class="rv">2–3 pacientes</span></div>
+      <div class="resumo-row"><span class="rl">Caixa mínimo</span><span class="rv" style="color:#D4B878">~R$ 66.000</span></div>
+      <div class="resumo-row"><span class="rl">Resultado 6m</span><span class="rv neg">-R$ 65.456</span></div>
+      <div class="resumo-row"><span class="rl">Resultado 12m</span><span class="rv neg">-R$ 18.424</span></div>
+      <div class="resumo-row"><span class="rl">Resultado 18m</span><span class="rv pos">+R$ 142.104</span></div>
+    </div>
+
+    <div>
+      <p class="resumo-col-title o">Otimista</p>
+      <div class="resumo-row"><span class="rl">Break-even</span><span class="rv pos">Mês 4</span></div>
+      <div class="resumo-row"><span class="rl">Captação/mês</span><span class="rv">4–5 pacientes</span></div>
+      <div class="resumo-row"><span class="rl">Caixa mínimo</span><span class="rv pos">~R$ 35.000</span></div>
+      <div class="resumo-row"><span class="rl">Resultado 6m</span><span class="rv neg">-R$ 7.248</span></div>
+      <div class="resumo-row"><span class="rl">Resultado 12m</span><span class="rv pos">+R$ 197.792</span></div>
+      <div class="resumo-row"><span class="rl">Resultado 18m</span><span class="rv pos">+R$ 546.640</span></div>
+    </div>
+
+  </div>
+  <p class="resumo-obs">
+    Valores baseados em ticket médio de R$ 1.712 e despesas operacionais fixas de R$ 28.600/mês · Não incluem investimento inicial de abertura · Break-even de referência para clínicas privadas sem convênio no Brasil: 8–14 meses · ★ Marco de 6/12/18 meses · ✓ Mês de break-even operacional
+  </p>
+</div>
+
+<footer>
+  Clínica Jasper · Projeções financeiras para uso interno · Valores estimados sujeitos a revisão · Junho 2026
+</footer>
+
+</body>
+</html>
