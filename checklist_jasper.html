@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checklist — Clínica Jasper</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F2ED;
+    --ink: #1C1916;
+    --muted: #7A746D;
+    --accent: #2D5A4E;
+    --accent-light: #EAF0EE;
+    --warn: #B84C20;
+    --gold: #9A7840;
+    --gold-light: #F5EFE3;
+    --border: #DDD8D0;
+    --white: #FDFCFA;
+    --done: #2D5A4E;
+    --pending: #DDD8D0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 32px 64px;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 20px;
+    margin-bottom: 10px;
+  }
+
+  header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 42px;
+    font-weight: 300;
+    line-height: 1.0;
+    letter-spacing: -0.5px;
+  }
+
+  header h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .header-meta {
+    text-align: right;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  .progress-bar-wrap {
+    margin: 16px 0 36px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.6s ease;
+  }
+
+  .progress-label {
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+    min-width: 80px;
+    text-align: right;
+  }
+
+  .section {
+    margin-bottom: 36px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .section-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: -0.3px;
+  }
+
+  .section-title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .items {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+  }
+
+  .item:hover {
+    border-color: var(--accent);
+    background: var(--accent-light);
+  }
+
+  .item.checked {
+    background: var(--accent-light);
+    border-color: var(--accent);
+  }
+
+  .item.checked .item-title {
+    text-decoration: line-through;
+    color: var(--muted);
+  }
+
+  .checkbox {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    background: var(--white);
+  }
+
+  .item.checked .checkbox {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .checkbox svg { display: none; }
+  .item.checked .checkbox svg { display: block; }
+
+  .item-content { flex: 1; }
+
+  .item-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .item-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    transition: all 0.15s ease;
+  }
+
+  .item-value {
+    font-size: 11px;
+    color: var(--gold);
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .item-note {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 300;
+    margin-top: 1px;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 2px;
+    margin-left: 6px;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+
+  .tag-urgent { background: #FAE8E3; color: var(--warn); }
+  .tag-legal  { background: #F0EAF5; color: #6B3FA0; }
+  .tag-infra  { background: var(--gold-light); color: var(--gold); }
+  .tag-tech   { background: #E3EAF5; color: #2A4A8A; }
+  .tag-verify { background: #FFF8E3; color: #8A6800; }
+
+  .alerta {
+    display: flex;
+    gap: 10px;
+    background: #FAE8E3;
+    border: 1px solid #E8C4B4;
+    border-left: 4px solid var(--warn);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-bottom: 32px;
+    font-size: 12px;
+    color: var(--ink);
+  }
+
+  .alerta strong {
+    display: block;
+    color: var(--warn);
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .financeiro {
+    background: var(--ink);
+    color: var(--white);
+    border-radius: 8px;
+    padding: 24px 28px;
+    margin-top: 40px;
+  }
+
+  .financeiro h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 300;
+    margin-bottom: 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    padding-bottom: 12px;
+  }
+
+  .fin-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .fin-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    font-size: 12px;
+  }
+
+  .fin-row .label { color: rgba(255,255,255,0.6); }
+  .fin-row .value { color: var(--white); font-weight: 500; }
+
+  .fin-total {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0 0;
+    font-size: 14px;
+    border-top: 1px solid rgba(255,255,255,0.3);
+    margin-top: 8px;
+  }
+
+  .fin-total .label {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  .fin-total .value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    color: #A8D4C4;
+  }
+
+  footer {
+    margin-top: 48px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-size: 10px;
+    color: var(--muted);
+    text-align: center;
+    font-weight: 300;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <h1>Checklist de<br><em>Abertura</em></h1>
+    <div class="header-meta">
+      Clínica Jasper · Saúde Mental Boutique<br>
+      Copacabana / Botafogo · 2 Salas · 6–7 Sócios<br>
+      Junho 2026
+    </div>
+  </header>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-label" id="progressLabel">0 de 0 itens</div>
+  </div>
+
+  <div class="alerta">
+    <div>⚠️</div>
+    <div>
+      <strong>Atenção — ordem importa</strong>
+      Licença Sanitária e Alvará podem levar até 6 meses no Rio de Janeiro. Iniciar esses processos antes da reforma, não depois. CNPJ é o primeiro passo — tudo depende dele. Empresa jurídica contratada cuidará dos processos burocráticos.
+    </div>
+  </div>
+
+  <!-- 1. SOCIETÁRIO E JURÍDICO -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">01</span>
+      <span class="section-title">Societário e <em>Jurídico</em></span>
+      <div class="section-line"></div>
+    </div>
+    <div class="items">
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Contratar empresa jurídica especializada em saúde <span class="tag tag-urgent">Primeiro passo</span></span><span class="item-value">A orçar</span></div>
+          <div class="item-note">Responsável pelos processos burocráticos, contratos, LGPD e compliance CFP/CRM</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Definir participação societária e aporte de cada sócio <span class="tag tag-urgent">Prioritário</span></span></div>
+          <div class="item-note">6–7 sócios · Fundadores com participação diferenciada · Acordo antes de qualquer gasto</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Definir tipo societário <span class="tag tag-legal">Legal</span></span></div>
+          <div class="item-note">Sociedade Simples Ltda. recomendada para psicólogo + psiquiatra — validar com contador e jurídico</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Redigir e assinar contrato social</span><span class="item-value">R$ 800–1.500</span></div>
+          <div class="item-note">Incluir cláusulas de saída, direito de preferência, mecanismo de desempate e responsabilidades de cada sócio</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Abrir CNPJ na Receita Federal</span><span class="item-value">R$ 1.500–2.500</span></div>
+          <div class="item-note">CNAE: 8630-5/04 ou 8630-5/99 · Endereço físico já definido · Feito pelo contador</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Contratar contador especializado em saúde</span><span class="item-value">R$ 800–1.200/mês</span></div>
+          <div class="item-note">Validar enquadramento no Simples Nacional · Verificar fator R · Definir regime tributário</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Elaborar contratos com pacientes e termos de consentimento <span class="tag tag-legal">Legal</span></span></div>
+          <div class="item-note">Autorização de cobrança recorrente · Política de cancelamento · Cláusulas de plano e sessões extras · LGPD</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. REGISTROS NOS CONSELHOS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">02</span>
+      <span class="section-title">Registros nos <em>Conselhos</em></span>
+      <div class="section-line"></div>
+    </div>
+    <div class="items">
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Registro da clínica como PJ no CRP-RJ</span><span class="item-value">R$ 300–600</span></div>
+          <div class="item-note">Exige CNPJ ativo · Responsável técnico psicólogo indicado · Anuidade PJ</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Certificado de Responsabilidade Técnica — CRM-RJ</span><span class="item-value">R$ 200–500</span></div>
+          <div class="item-note">Responsável técnico médico (sócio psiquiatra) · Obrigatório para funcionamento</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Verificar obrigatoriedade de registro no CFM <span class="tag tag-verify">Verificar</span></span></div>
+          <div class="item-note">Clínicas com psiquiatra podem exigir registro adicional no Conselho Federal de Medicina — confirmar com jurídico</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. LOCALIZAÇÃO E IMÓVEL -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">03</span>
+      <span class="section-title">Localização e <em>Imóvel</em></span>
+      <div class="section-line"></div>
+    </div>
+    <div class="items">
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Escolha do imóvel — Copacabana ou Botafogo <span class="tag tag-urgent">Em andamento</span></span></div>
+          <div class="item-note">Sede clínica boutique · Zona Sul · Alta densidade populacional · Perfil adulto e infantil · Centro fica para ramificação corporativa futura</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Consulta de viabilidade de zoneamento <span class="tag tag-urgent">Antes de assinar aluguel</span></span></div>
+          <div class="item-note">Verificar se o imóvel permite atividade de saúde · Portal Carioca Digital · Prefeitura RJ</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Assinar contrato de locação</span></div>
+          <div class="item-note">Negociar carência de 2–3 meses para reforma · Verificar cláusulas de rescisão · Revisão pelo jurídico antes de assinar</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Visita técnica sanitária prévia ao imóvel</span><span class="item-value">R$ 500–1.500</span></div>
+          <div class="item-note">Arquiteto ou consultor RDC 50/2002 · Identificar adequações necessárias antes da reforma · Confirmar exigências específicas para consultórios sem procedimentos</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. DOCUMENTAÇÃO LEGAL -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">04</span>
+      <span class="section-title">Documentação <em>Legal</em></span>
+      <div class="section-line"></div>
+    </div>
+    <div class="items">
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Protocolar Licença Sanitária — VISA-Rio <span class="tag tag-urgent">Iniciar primeiro</span></span><span class="item-value">R$ 2.000–4.000</span></div>
+          <div class="item-note">Sistema SIGVISA · Prazo: 60–180 dias · Exige planta baixa + responsáveis técnicos registrados · Processo a cargo do jurídico</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Consultar VISA-Rio sobre exigências para consultórios sem procedimentos <span class="tag tag-verify">Verificar</span></span></div>
+          <div class="item-note">Clínica realiza somente atendimentos de psicologia e psiquiatria — confirmar se piso lavável e pias nas salas são obrigatórios · Solicitar orientação formal por escrito</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Solicitar Alvará de Localização e Funcionamento</span><span class="item-value">R$ 500–1.500</span></div>
+          <div class="item-note">Portal Carioca Digital · Prazo: 30–90 dias · Exige CNPJ e contrato de locação</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Solicitar AVCB — Corpo de Bombeiros RJ</span><span class="item-value">R$ 2.000–5.000</span></div>
+          <div class="item-note">Após instalação de extintores e sinalização · Verificar se prédio já possui AVCB coletivo que cubra a unidade</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Cadastrar no CNES — Ministério da Saúde</span></div>
+          <div class="item-note">Último passo · Só após Licença Sanitária emitida · Sistema SCNES online</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Elaborar PGRSS — Plano de Gerenciamento de Resíduos <span class="tag tag-legal">Obrigatório</span></span><span class="item-value">R$ 800–2.000</span></div>
+          <div class="item-note">Necessário para Licença Sanitária · Contratar empresa especializada ou consultor ambiental</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Contrato com empresa de coleta de resíduo de saúde <span class="tag tag-legal">Obrigatório</span></span></div>
+          <div class="item-note">Resíduo clínico não pode ser descartado no lixo comum · Custo mensal variável</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. REFORMA E INFRAESTRUTURA -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">05</span>
+      <span class="section-title">Reforma e <em>Infraestrutura</em></span>
+      <div class="section-line"></div>
+    </div>
+    <div class="items">
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Contratar arquiteto/designer de interiores <span class="tag tag-infra">Identidade</span></span><span class="item-value">R$ 3.000–8.000</span></div>
+          <div class="item-note">Essencial para o posicionamento boutique · Estilo biofílico contemporâneo · Deve conhecer normas RDC 50/2002</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Isolamento acústico das salas de atendimento <span class="tag tag-urgent">Sanitário</span></span></div>
+          <div class="item-note">Paciente não pode ser ouvido na recepção · Exigência da Vigilância Sanitária · Prioridade na reforma</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Piso nas salas de atendimento <span class="tag tag-verify">Verificar exigência</span></span></div>
+          <div class="item-note">Confirmar com VISA-Rio se piso lavável é obrigatório para consultórios sem procedimentos · Piso vinílico impermeável atende a norma e é mais acolhedor — alternativa ao porcelanato</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Pia com água corrente — localização <span class="tag tag-verify">Verificar exigência</span></span></div>
+          <div class="item-note">Para consultórios sem procedimentos, norma pode aceitar pia em local adjacente · Confirmar com VISA-Rio antes de instalar dentro de cada sala</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Pintura e acabamentos</span><span class="item-value">R$ 2.000–4.000</span></div>
+          <div class="item-note">Tons neutros e acolhedores · Revestimento lavável até 1,50m nas áreas de higiene (banheiros)</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Iluminação — pontos de luz quente e dimmers</span><span class="item-value">R$ 2.000–5.000</span></div>
+          <div class="item-note">Diferencial de ambientação boutique · Incluir iluminação de emergência obrigatória</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Banheiro adaptado PCD <span class="tag tag-legal">Obrigatório</span></span></div>
+          <div class="item-note">Lei 10.098 · Barras de apoio, espaço para cadeira de rodas, pia em altura adequada</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Sinalização de emergência e extintores</span><span class="item-value">R$ 1.500–3.000</span></div>
+          <div class="item-note">Extintores + placas de saída + iluminação de emergência · Necessário para AVCB</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. MOBÍLIA E AMBIENTAÇÃO -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">06</span>
+      <span class="section-title">Mobília e <em>Ambientação</em></span>
+      <div class="section-line"></div>
+    </div>
+    <div class="items">
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Mobília das salas clínicas (×2)</span><span class="item-value">R$ 5.000</span></div>
+          <div class="item-note">Divã/poltrona terapêutica, cadeira terapeuta, mesa lateral, luminária por sala</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Mobília da recepção</span><span class="item-value">R$ 4.000</span></div>
+          <div class="item-note">Balcão, cadeiras de espera (4–6), mesa, iluminação</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Ambientação boutique <span class="tag tag-infra">Identidade</span></span><span class="item-value">R$ 2.500</span></div>
+          <div class="item-note">Plantas, quadros, tapetes, objetos decorativos, difusores · Estilo biofílico contemporâneo</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Dispenser de sabonete e papel toalha nos banheiros <span class="tag tag-urgent">Sanitário</span></span></div>
+          <div class="item-note">Fixos na parede · Toalha de tecido não é aceita na vistoria sanitária</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Lixeiras com tampa e pedal em todas as salas e banheiros <span class="tag tag-urgent">Sanitário</span></span></div>
+          <div class="item-note">Lixeira comum (preta) + lixeira resíduo de saúde (branca/símbolo biológico) por sala</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. TECNOLOGIA E SISTEMAS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">07</span>
+      <span class="section-title">Tecnologia e <em>Sistemas</em></span>
+      <div class="section-line"></div>
+    </div>
+    <div class="items">
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Escolher sistema de prontuário eletrônico <span class="tag tag-tech">Tech</span></span><span class="item-value">A definir</span></div>
+          <div class="item-note">Requisito essencial: evolução cronológica multiprofissional PSI+PSQ no mesmo prontuário · Perfis de acesso diferenciados (recepcionista / profissional / sócio) · Candidatos: Clinicorp, Amplimed</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Contratar sistema de cobrança recorrente <span class="tag tag-tech">Tech</span></span><span class="item-value">R$ 0 + % por transação</span></div>
+          <div class="item-note">Asaas ou Iugu · Gestão automática dos contratos de plano · Cobranças mensais via cartão · Controle de inadimplência</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Computadores (×2) <span class="tag tag-tech">Tech</span></span><span class="item-value">R$ 4.000–6.000</span></div>
+          <div class="item-note">Notebooks ou desktops para uso clínico e administrativo</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Impressora multifuncional</span><span class="item-value">R$ 800–1.500</span></div>
+          <div class="item-note">Laudos, termos de consentimento, documentos administrativos</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Infraestrutura de rede — roteador Wi-Fi estável</span><span class="item-value">R$ 500–800</span></div>
+          <div class="item-note">Sinal em todas as salas e recepção · Rede separada para pacientes se necessário</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">WhatsApp Business configurado + linha profissional</span><span class="item-value">R$ 200–400</span></div>
+          <div class="item-note">Canal principal de primeiro contato com paciente · Tom e respostas padronizados pela recepção</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. MARCA E COMUNICAÇÃO -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-number">08</span>
+      <span class="section-title">Marca e <em>Comunicação</em></span>
+      <div class="section-line"></div>
+    </div>
+    <div class="items">
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Confirmar nome da clínica — Jasper <span class="tag tag-legal">Legal</span></span></div>
+          <div class="item-note">Verificar disponibilidade no INPI · Registrar marca · Adquirir domínio jasper.com.br ou similar</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Identidade visual — logo, paleta, tipografia</span><span class="item-value">R$ 1.500–4.000</span></div>
+          <div class="item-note">Investimento único · Tom exclusivo e sofisticado · Base para tudo que vem depois</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Site profissional</span><span class="item-value">R$ 2.000–5.000</span></div>
+          <div class="item-note">Domínio + hospedagem + desenvolvimento · Apresentação dos planos e agendamento online</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Instagram e presença digital estruturada</span></div>
+          <div class="item-note">Aproveitar a presença online do psiquiatra sócio · Conteúdo de saúde mental para captação orgânica</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Sinalização externa e interna</span><span class="item-value">R$ 800–1.500</span></div>
+          <div class="item-note">Placa externa obrigatória com nome, CNPJ e responsáveis técnicos · Placas de identificação das salas</div>
+        </div>
+      </div>
+      <div class="item" onclick="toggle(this)">
+        <div class="checkbox"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="item-content">
+          <div class="item-top"><span class="item-title">Papelaria — termos, fichas, cartões</span><span class="item-value">R$ 500–1.000</span></div>
+          <div class="item-note">Termos de consentimento · Fichas de anamnese · Cartões de visita</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESUMO FINANCEIRO -->
+  <div class="financeiro">
+    <h2>Resumo do Investimento Inicial</h2>
+    <div class="fin-grid">
+      <div>
+        <div class="fin-row"><span class="label">Societário e jurídico</span><span class="value">R$ 2.300–4.000</span></div>
+        <div class="fin-row"><span class="label">Registros nos conselhos</span><span class="value">R$ 500–1.100</span></div>
+        <div class="fin-row"><span class="label">Documentação legal</span><span class="value">R$ 8.000–15.000</span></div>
+        <div class="fin-row"><span class="label">Reforma e infraestrutura</span><span class="value">R$ 10.000–25.000</span></div>
+      </div>
+      <div>
+        <div class="fin-row"><span class="label">Mobília e ambientação</span><span class="value">R$ 12.300</span></div>
+        <div class="fin-row"><span class="label">Tecnologia e sistemas</span><span class="value">R$ 6.300–10.700</span></div>
+        <div class="fin-row"><span class="label">Marca e comunicação</span><span class="value">R$ 4.800–11.500</span></div>
+        <div class="fin-row"><span class="label">Reserva operacional (3–4 meses)</span><span class="value">R$ 50.000–80.000</span></div>
+      </div>
+    </div>
+    <div class="fin-total">
+      <span class="label">Investimento total estimado</span>
+      <span class="value">R$ 94.200 — R$ 159.600</span>
+    </div>
+  </div>
+
+  <footer>
+    Clínica Jasper · Checklist elaborado para fins de planejamento estratégico · Valores estimados — sujeitos a orçamentos reais · Junho 2026
+  </footer>
+
+</div>
+
+<script>
+  function toggle(el) {
+    el.classList.toggle('checked');
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const all = document.querySelectorAll('.item');
+    const done = document.querySelectorAll('.item.checked');
+    const pct = all.length ? Math.round((done.length / all.length) * 100) : 0;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = done.length + ' de ' + all.length + ' itens';
+  }
+
+  updateProgress();
+</script>
+</body>
+</html>
